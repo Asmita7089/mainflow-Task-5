@@ -1,0 +1,97 @@
+import random
+import time
+
+class StockMarket:
+    def __init__(self):
+        self.stocks = {
+            'AAPL': random.randint(100, 300),
+            'TSLA': random.randint(500, 1000),
+            'GOOGL': random.randint(1000, 2500),
+            'AMZN': random.randint(1500, 3500)
+        }
+        self.portfolio = {}
+        self.balance = 10000
+
+    def display_stocks(self):
+        print("\n--- Current Stock Prices ---")
+        for stock, price in self.stocks.items():
+            print(f"{stock}: ${price}")
+
+    def buy_stock(self):
+        stock = input("Enter the stock symbol to buy (AAPL/TSLA/GOOGL/AMZN): ").upper()
+        if stock not in self.stocks:
+            print("Invalid stock symbol!")
+            return
+
+        quantity = int(input("Enter quantity to buy: "))
+        cost = self.stocks[stock] * quantity
+
+        if cost > self.balance:
+            print("Insufficient balance!")
+        else:
+            self.balance -= cost
+            if stock in self.portfolio:
+                self.portfolio[stock] += quantity
+            else:
+                self.portfolio[stock] = quantity
+            print(f"Successfully bought {quantity} shares of {stock}.")
+
+    def sell_stock(self):
+        stock = input("Enter the stock symbol to sell (AAPL/TSLA/GOOGL/AMZN): ").upper()
+        if stock not in self.portfolio:
+            print("You do not own this stock!")
+            return
+
+        quantity = int(input("Enter quantity to sell: "))
+        if quantity > self.portfolio[stock]:
+            print("You don't have enough shares to sell!")
+        else:
+            earnings = self.stocks[stock] * quantity
+            self.balance += earnings
+            self.portfolio[stock] -= quantity
+
+            if self.portfolio[stock] == 0:
+                del self.portfolio[stock]
+            print(f"Successfully sold {quantity} shares of {stock}.")
+
+    def display_portfolio(self):
+        print("\n--- Your Portfolio ---")
+        if not self.portfolio:
+            print("You don't own any stocks.")
+        else:
+            for stock, quantity in self.portfolio.items():
+                print(f"{stock}: {quantity} shares @ ${self.stocks[stock]} each")
+        print(f"Balance: ${self.balance}")
+
+    def update_prices(self):
+        for stock in self.stocks:
+            change = random.randint(-50, 50)
+            self.stocks[stock] += change
+
+    def run_simulation(self):
+        while True:
+            self.update_prices()
+            self.display_stocks()
+
+            print("\n1. Buy Stock")
+            print("2. Sell Stock")
+            print("3. View Portfolio")
+            print("4. Exit")
+
+            choice = input("Enter your choice: ")
+            if choice == '1':
+                self.buy_stock()
+            elif choice == '2':
+                self.sell_stock()
+            elif choice == '3':
+                self.display_portfolio()
+            elif choice == '4':
+                print("Exiting simulation. Goodbye!")
+                break
+            else:
+                print("Invalid choice. Please try again.")
+            
+            time.sleep(2)
+if __name__ == "__main__":
+    market = StockMarket()
+    market.run_simulation()
